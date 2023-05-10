@@ -6,7 +6,33 @@ export default function Home() {
   // state management variables
   const [count, setCounter] = useState(0)
   const [animalInput, setAnimalInput] = useState('')
-
+  // fires on form submit event
+  async function onSubmit(e) {
+    try {
+      if (count == 10) {
+        return console.log('reached your limit')
+      }
+      e.preventDefault()
+      // network POST request
+      const response = await fetch('/api/generate', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({animal: animalInput})
+      })
+      const data = await response.json()
+      // check HTTP status, throw error if not '200' success
+      if (response.status !== 200) {
+        throw data.error || new Error(`Request failed with status ${response.status}`)
+      }
+      setCounter(count + 1)
+      setAnimalInput('')
+    } catch (error) {
+      console.error(error)
+      alert(error.message)
+    }
+  }
   return (
     <>
       <div>
@@ -18,7 +44,7 @@ export default function Home() {
           <img src='/favicon.ico'/>
           <h3>Generate Pet Name</h3>
           <p>You've used this app {count} times</p>
-          <form>
+          <form onSubmit={onSubmit}>
             <input 
               type='text'
               name='animal'
@@ -28,14 +54,10 @@ export default function Home() {
                 console.log(animalInput)
               }}
               placeholder='enter an animal'
-              />
-            <input type='submit' onClick={(e) => {
-              e.preventDefault()
-              if (count == 10) {
-                return console.log('reached your limit')
-              }
-              setCounter(count + 1)
-            }}/>
+            />
+            <input type='submit'
+              value='generate names'
+            />
           </form>
         </main>
       </div>

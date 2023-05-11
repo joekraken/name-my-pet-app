@@ -12,9 +12,6 @@ export default function Home() {
   // fires on form submit event
   async function onSubmit(e) {
     try {
-      if (count == 10) {
-        return console.log('reached your limit')
-      }
       e.preventDefault()
       // network POST request
       const response = await fetch('/api/generate', {
@@ -29,9 +26,10 @@ export default function Home() {
       if (response.status !== 200) {
         throw data.error || new Error(`Request failed with status ${response.status}`)
       }
-      setCounter(count + 1)
+      setResult(data.result)
       setAnimalInput('')
     } catch (error) {
+      setResult('')
       console.error(error)
       alert(error.message)
     }
@@ -52,7 +50,6 @@ export default function Home() {
               value={animalInput}
               onChange={(e) => {
                 setAnimalInput(e.target.value)
-                console.log(animalInput)
               }}
               placeholder='enter an animal'
             />
